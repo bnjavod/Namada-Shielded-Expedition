@@ -27,62 +27,66 @@ https://rpc.namadase-cybernova.icu/
 https://indexer.namadase-cybernova.icu/block/last/
 ```
 
-## Validator Setup
+## Post-genesis Validator Setup
 
 #### Recover key from registered account
 ```
-namadaw derive --alias "${ALIAS}"
+namadaw derive --alias $WALLET --alias-force
 ```
 
-#### check key address
+#### find key address
 ```
-namadaw find --alias "${ALIAS}"
+namadaw find --alias $WALLET
 ```
 
 #### check balance well
 ```
-namadac balance --owner "${ALIAS}"
+namadac balance --owner $WALLET
 ```
 
 #### find validator key
 ```
-namadac find-validator --tm-address=$(curl -s localhost:26657/status | jq -r .result.validator_info.address)
+VALIDATOR_ADDR=$(namadac find-validator --tm-address=$(curl -s localhost:26657/status | jq -r .result.validator_info.address) | grep "Found validator address" | cut -d '"' -f 2)
+echo $VALIDATOR_ADDR
 ```
 
 #### initialize validator
 ```
-namadac  init-validator \
- --alias "${VAL_NAME}" \
- --account-keys "${KEY_NAME}" \
- --signing-keys "${KEY_NAME}" \
- --commission-rate 0.1 \
- --max-commission-rate-change 0.1 \
- --email "${EMAIL}" \
+namada client init-validator \
+  --alias $VALIDATOR_ALIAS \
+  --account-keys $WALLET \
+  --signing-keys $WALLET \
+  --commission-rate 0.05 \
+  --max-commission-rate-change 0.01 \
+  --email $EMAIL \
+  --memo $WALLET_PK
 ```
 
 #### bond tokens to your validator
 ```
-namadac  bond \
- --source "${KEY_NAME}" \
- --validator "<Validator address>" \
- --amount 1000 \
+namadac bond \
+  --validator $VALIDATOR_ALIAS \
+  --source $WALLET \
+  --signing-keys $WALLET_PK \
+  --amount $SELF_BOND_AMOUNT \
+  --memo $WALLET_PK
 ```
 
 ## Validator management
 
 #### validator consensus state
 ```
-namadac validator-state --validator "<Validator address>"
+namadac validator-state --validator $VALIDATOR_ADDR
 ```
 
 #### unjail validator
 ```
-namadac unjail-validator --validator  "<Validator address>"
+namadac unjail-validator --validator $VALIDATOR_ADDR
 ```
 
 #### claim rewards
 ```
-namadac claim-rewards --validator "<Validator address>"
+namadac claim-rewards --validator $VALIDATOR_ADDR
 ```
 
 ## Run node as Service
