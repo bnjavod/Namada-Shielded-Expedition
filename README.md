@@ -29,28 +29,28 @@ https://indexer.namadase-cybernova.icu/block/last
 
 ## Post-genesis Validator Setup
 
-#### Recover key from registered account
+#### Recover key of registered SE account
 ```
 namadaw derive --alias $WALLET --alias-force
 ```
 
-#### find key address
+#### Find key address
 ```
 namadaw find --alias $WALLET
 ```
 
-#### check balance well
+#### Check balance well
 ```
 namadac balance --owner $WALLET
 ```
 
-#### find validator key
+#### Find validator key
 ```
 VALIDATOR_ADDR=$(namadac find-validator --tm-address=$(curl -s localhost:26657/status | jq -r .result.validator_info.address) | grep "Found validator address" | cut -d '"' -f 2)
 echo $VALIDATOR_ADDR
 ```
 
-#### initialize validator
+#### Initialize post-genesis validator
 ```
 namada client init-validator \
   --alias $VALIDATOR_ALIAS \
@@ -62,7 +62,7 @@ namada client init-validator \
   --memo $WALLET_PK
 ```
 
-#### bond tokens to your validator
+#### Self-bond
 ```
 namadac bond \
   --validator $VALIDATOR_ALIAS \
@@ -72,21 +72,31 @@ namadac bond \
   --memo $WALLET_PK
 ```
 
-## Validator management
+## Validator Management
 
-#### validator consensus state
+#### Check validator consensus state
 ```
 namadac validator-state --validator $VALIDATOR_ADDR
 ```
 
-#### unjail validator
+#### Unjail validator
 ```
 namadac unjail-validator --validator $VALIDATOR_ADDR
 ```
 
-#### claim rewards
+#### Claim rewards
 ```
 namadac claim-rewards --validator $VALIDATOR_ADDR
+```
+
+#### Check node status
+```
+curl -s localhost:26657/status | jq .
+```
+
+#### Check validator bonded-stake
+```
+namadac bonded-stake --validator $VALIDATOR_ADDR
 ```
 
 ## Configure Node Service
@@ -114,6 +124,7 @@ EOF
 
 ## Launch Node service
 ```
+sudo chmod 755 /usr/lib/systemd/user/namadase.service
 systemctl --user daemon-reload
 systemctl --user enable namadase
 systemctl --user start namadase
