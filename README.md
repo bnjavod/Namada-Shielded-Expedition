@@ -24,7 +24,7 @@ https://rpc.namadase-cybernova.icu/
 
 #### Indexer Service: 
 ```
-https://indexer.namadase-cybernova.icu/block/last/
+https://indexer.namadase-cybernova.icu/block/last
 ```
 
 ## Post-genesis Validator Setup
