@@ -89,25 +89,33 @@ namadac unjail-validator --validator $VALIDATOR_ADDR
 namadac claim-rewards --validator $VALIDATOR_ADDR
 ```
 
-## Run node as Service
+## Configure Node Service
 ```
-sudo tee /etc/systemd/system/namadad.service << EOF
+sudo tee /usr/lib/systemd/user/namadase.service > /dev/null <<EOF
 [Unit]
-Description=Namada Node
+Description=Namada SE Daemon Service
 After=network.target
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
 [Service]
-User=$USER
-WorkingDirectory=$HOME/.local/share/namada
 Type=simple
-ExecStart=/usr/local/bin/namada --base-dir=$HOME/.local/share/namada node ledger run
+Restart=always
+RestartSec=30
+WorkingDirectory=$HOME/.local/share/namada
 Environment=NAMADA_CMT_STDOUT=true
 Environment=TM_LOG_LEVEL=p2p:none,pex:error
-RemainAfterExit=no
-Restart=on-failure
-RestartSec=10s
-LimitNOFILE=65535
+ExecStart=/usr/local/bin/namada --base-dir=$HOME/.local/share/namada node ledger run
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
 EOF
+```
+
+## Launch Node service
+```
+systemctl --user daemon-reload
+systemctl --user enable namadase
+systemctl --user start namadase
+journalctl --user-unit=namadase.service -f
 ```
