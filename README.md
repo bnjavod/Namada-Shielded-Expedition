@@ -17,6 +17,11 @@ tcp://47bf9e314826d5d8ec29c90922cf6f1c734e82bd@37.60.238.210:26657
 tcp://47bf9e314826d5d8ec29c90922cf6f1c734e82bd@37.60.238.210:26657
 ```
 
+#### Address Book
+```
+http://rpc.namadase-cybernova.icu:46656/addrbook.json
+```
+
 #### Public RPC: 
 ```
 https://rpc.namadase-cybernova.icu/
